@@ -1,0 +1,136 @@
+id: fitze
+order: 18
+name: Fitze Data & Due Diligence
+short_description: "Web fetch, domain / repo / token vetting — native x402 pay-per-call"
+short_description_zh: "网页抓取、域名 / 仓库 / 代币核验 — 原生 x402 按次付费"
+full_description: >
+  Pay-per-call data and due-diligence tools for AI agents: fetch any public URL and get cleaned
+  text plus links; vet a domain before trusting it (RDAP registrar, creation and expiry dates,
+  DNS A/MX/NS/TXT, Certificate Transparency history via crt.sh); check a GitHub repository;
+  look up a token contract; search SEC EDGAR filings and FDA recalls; plus FX rates, weather and
+  earthquake feeds. Upstream is a native x402 resource server on Base, so claw402 settles each
+  call in USDC directly to the provider wallet. No API key, no signup, no subscription.
+full_description_zh: >
+  面向 AI Agent 的按次付费数据与尽职调查工具：抓取任意公开 URL 并返回清洗后的正文与链接；
+  信任一个域名前先做核验（RDAP 注册商、创建/到期时间、DNS A/MX/NS/TXT、crt.sh 证书透明度历史）；
+  检查 GitHub 仓库；查询代币合约；检索 SEC EDGAR 备案与 FDA 召回；另有汇率、天气与地震数据。
+  上游是 Base 上的原生 x402 资源服务器，claw402 每笔调用以 USDC 直接结算给提供方钱包。
+  无需 API Key、无需注册、无需订阅。
+website: https://fitze-x402-seller.app.workbuddy.host
+logo_url: /providers/fitze.svg
+category: crypto
+tags: [data, due-diligence, domain, security, anti-phishing, web-scraping, github, x402-native, ai-agent]
+featured: false
+
+upstream_base_url: https://fitze-x402-seller.app.workbuddy.host
+upstream_type: x402
+
+routes:
+  # ── Web ──
+  - gateway_path: /api/v1/fitze/web_fetch
+    upstream_path: /tools/web_fetch
+    method: GET
+    category: Web
+    user_price: "0.008"
+    upstream_cost: "0.005"
+    allowed_params: [url, maxChars]
+    description_en: >
+      Fetch a public URL and return HTTP status, final URL, title, cleaned text (scripts and
+      styles stripped) and the top absolute links. Pass a bare host such as example.com — the
+      https:// prefix is added automatically (the upstream edge rejects percent-encoded "://"
+      in the query string).
+    description: >
+      抓取任意公开 URL，返回状态码、最终 URL、标题、清洗后的正文（去掉脚本与样式）与链接。
+      url 参数请传裸域名（如 example.com），https:// 会自动补全。
+
+  # ── Due diligence ──
+  - gateway_path: /api/v1/fitze/domain_intel
+    upstream_path: /tools/domain_intel
+    method: GET
+    category: Due Diligence
+    user_price: "0.008"
+    upstream_cost: "0.005"
+    allowed_params: [domain]
+    description_en: >
+      Domain due-diligence bundle: RDAP registrar and creation/expiry dates, DNS A/MX/NS/TXT
+      records, and Certificate Transparency history (issue count, earliest and latest certificate).
+      Use it to vet a domain before trusting, linking to or paying it.
+    description: >
+      域名尽职调查组合：RDAP 注册商与创建/到期时间、DNS A/MX/NS/TXT 记录、证书透明度历史
+      （证书数量、最早与最晚签发时间）。用于信任、跳转或付款前核验域名。
+
+  - gateway_path: /api/v1/fitze/repo_diligence
+    upstream_path: /tools/repo_diligence
+    method: GET
+    category: Due Diligence
+    user_price: "0.045"
+    upstream_cost: "0.03"
+    allowed_params: [repo]
+    description_en: >
+      Trust check for a GitHub repository: stars, forks, open issues, latest release, contributor
+      signals and repo metadata, packaged as a single dossier. Use before depending on or funding
+      an open-source project.
+    description: >
+      GitHub 仓库可信度检查：star、fork、open issue、最新 release、贡献者信号与仓库元数据，
+      打包为一份尽调简报。用于依赖或资助某开源项目之前。
+
+  - gateway_path: /api/v1/fitze/github_repo
+    upstream_path: /tools/github_repo
+    method: GET
+    category: Due Diligence
+    user_price: "0.008"
+    upstream_cost: "0.005"
+    allowed_params: [repo]
+    description_en: "Core GitHub repository facts: description, stars, forks, language, license, pushed and created dates."
+    description: "GitHub 仓库核心信息：描述、star、fork、语言、许可证、最近推送与创建时间。"
+
+  - gateway_path: /api/v1/fitze/token_intel
+    upstream_path: /tools/token_intel
+    method: GET
+    category: Due Diligence
+    user_price: "0.008"
+    upstream_cost: "0.005"
+    allowed_params: [query]
+    description_en: "Token contract lookup: name, symbol, decimals and total supply. Use to confirm a contract before interacting with it."
+    description: "代币合约查询：名称、符号、精度与总供应量。用于交互前确认合约。"
+
+  - gateway_path: /api/v1/fitze/sec_edgar_search
+    upstream_path: /tools/sec_edgar_search
+    method: GET
+    category: Filings
+    user_price: "0.03"
+    upstream_cost: "0.02"
+    allowed_params: [q, limit]
+    description_en: "Full-text search across SEC EDGAR filings with company name, form type, filing date and document links."
+    description: "SEC EDGAR 备案全文检索，返回公司名称、表单类型、提交日期与文档链接。"
+
+  # ── Market & reference data ──
+  - gateway_path: /api/v1/fitze/stock_quote
+    upstream_path: /tools/stock_quote
+    method: GET
+    category: Market Data
+    user_price: "0.015"
+    upstream_cost: "0.01"
+    allowed_params: [symbol]
+    description_en: "Latest quote for a US ticker: price, change, percent change, volume and session timestamps."
+    description: "美股最新报价：价格、涨跌额、涨跌幅、成交量与时段时间戳。"
+
+  - gateway_path: /api/v1/fitze/exchange_rates
+    upstream_path: /tools/exchange_rates
+    method: GET
+    category: Market Data
+    user_price: "0.004"
+    upstream_cost: "0.002"
+    allowed_params: [base, symbols]
+    description_en: "Reference FX rates for a base currency, optionally filtered to specific symbols."
+    description: "基准货币的参考汇率，可按指定币种过滤。"
+
+  - gateway_path: /api/v1/fitze/fda_recalls
+    upstream_path: /tools/fda_recalls
+    method: GET
+    category: Public Data
+    user_price: "0.03"
+    upstream_cost: "0.02"
+    allowed_params: [type, reason, limit]
+    description_en: "FDA recall feed (food, drug or device) filterable by reason keyword."
+    description: "FDA 召回数据（食品/药品/器械），可按原因关键词过滤。"
